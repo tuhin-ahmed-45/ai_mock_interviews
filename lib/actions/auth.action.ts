@@ -104,7 +104,7 @@ export async function getCurrentUser(): Promise<User | null> {
 
         return {
             ...userRecord.data(),
-            uid: userRecord.id,
+            id: userRecord.id,
         } as User;
 
     } catch (error) {
@@ -117,4 +117,34 @@ export async function isAuthenticated() {
     const user = await getCurrentUser();
 
     return !!user;
+}
+
+export async function getInterviewsByUserId(userId: string): Promise<Interview[] | null> {
+    const interview = await db
+        .collection('interviews')
+        .where('userId', '==', userId)
+        .orderBy('createdAt', 'desc')
+        .get();
+
+    return interview.docs.map((doc) => ({
+        ...doc.data(),
+        id: doc.id,
+    })) as Interview[];
+}
+
+export async function getLatestInterviews(params: GetLatestInterviewsParams): Promise<Interview[] | null> {
+    const { userId, limit = 20 } = params;
+
+    const interview = await db
+        .collection('interviews')
+        .orderBy('createdAt', 'desc')
+        .where('finalized', '==', true)
+        .where('userId', '!=', userId)
+        .limit(limit)
+        .get();
+
+    return interview.docs.map((doc) => ({
+        ...doc.data(),
+        id: doc.id,
+    })) as Interview[];
 }
