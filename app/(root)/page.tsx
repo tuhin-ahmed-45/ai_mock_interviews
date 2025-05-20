@@ -61,7 +61,6 @@ const HomePage = async () => {
                 <p>There are no new interviews available</p>
               )
           }
-          <p>There are no interviews available</p>
         </div>
       </section>
     </>
